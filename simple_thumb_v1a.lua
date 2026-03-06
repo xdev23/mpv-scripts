@@ -316,9 +316,7 @@ if use_script then
 	mp.register_event("file-loaded", file_load)
 	mp.register_event("shutdown", shutdown)
 
-	-- ==========================================
-	-- HOVER DETECTION WITH 30FPS POLLING (Anti-Freeze)
-	-- ==========================================
+	-- HOVER detection uses 30fps otherwise it behaves wierdly
 
 	local function show_preview()
 		if target_hover_time >= 0 then
@@ -377,4 +375,5 @@ if use_script then
 	-- Observe the property as a string (this handles both float numbers and the word "none")
 	mp.observe_property("user-data/osc/hover_mouse_time", "string", on_hover_time_change)
 	
+
 end
