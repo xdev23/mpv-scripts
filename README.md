@@ -1,5 +1,6 @@
 # mpv-scripts
 my mpv scripts
+
 btw, to some extent i did use ai in these scripts,  
 
 # simple_thumb_v1a.lua
