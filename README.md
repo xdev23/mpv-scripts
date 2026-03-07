@@ -7,7 +7,7 @@ btw, to some extent i did use ai in these scripts,
 
 it can show thumbnail using hidden mpv instance just like thumbfast, but no osc.lua is required, just save this file to scripts folder thats it. enjoy.
 
-# simple_thumb_v1v.lua(with chapters support)
+# simple_thumb_v1b.lua(with chapters support)
 
 it can show thumbnail and chapters using hidden mpv instance just like thumbfast, but no osc.lua is required, just save this file to scripts folder thats it. enjoy.
 
