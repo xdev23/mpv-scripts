@@ -29,8 +29,10 @@ if use_script then
 	local opt = require 'mp.options'
 	mp.utils = require "mp.utils"
 
-	local use_fixed_preview_height = true
-	local fixed_preview_y_offset = 90 
+	-- Positioning Configuration
+	local use_fixed_preview_height = true    -- used for top and bottombar only, if false dynamic y offset is used
+	local fixed_preview_y_offset = 90        -- Used for standard topbar/bottombar when fixed
+	local dynamic_preview_y_offset = 60      -- Used for other layouts, or when use_fixed_preview_height is false
 
 	local os_name = mp.get_property("platform") or "linux"
 	if os_name:match("windows") or os_name:match("mingw") then os_name = "windows" end
@@ -57,6 +59,7 @@ if use_script then
 	local preview_y = 20
 	local showing = false
 	local target_hover_time = -1
+	local is_topbar = false -- Tracks globally if we are on the top bar
 
 	local border_overlay = mp.create_osd_overlay("ass-events")
 
@@ -273,17 +276,23 @@ if use_script then
 					ass_data = top_bar .. "\n" .. bot_bar .. "\n" .. left_bar .. "\n" .. right_bar
 				end
 
-				-- 2. Assemble Chapter Text & Background BELOW the image
+				-- 2. Assemble Chapter Text & Background
 				if options.show_chapter and target_hover_time >= 0 then
 					local chap_title = get_chapter_at_time(target_hover_time)
 					if chap_title and chap_title ~= "" then
 						local fs = options.chapter_font_size
 						-- Truncate to fit the image width
 						local chap_text = truncate_text(chap_title, w - 10, fs)
-						
 						local chap_h = fs + 8
-						-- Place BELOW the image (and below the bottom border)
-						local chap_y = preview_y + h + bw 
+						
+						local chap_y
+						if is_topbar then
+							-- Place ABOVE the image (and above the top border)
+							chap_y = preview_y - chap_h - bw
+						else
+							-- Place BELOW the image (and below the bottom border)
+							chap_y = preview_y + h + bw 
+						end
 						
 						-- Draw Background if enabled
 						if options.use_background_for_thumbnail_chapter then
@@ -446,28 +455,54 @@ if use_script then
 			if preview_x < bw then preview_x = bw end
 			if preview_x + effective_w + bw > osd.w then preview_x = osd.w - effective_w - bw end
 			
-			-- Detect if the mouse is in the top half (topbar) or bottom half (bottombar)
-			local is_topbar = mouse.y < (osd.h / 2)
+			-- Detect if the mouse is in the top half or bottom half and save globally
+			is_topbar = mouse.y < (osd.h / 2)
 
-			if use_fixed_preview_height then
+			-- Dynamically parse script-opts to find the active osc-layout (Defaults to bottombar)
+			local osc_layout = "bottombar" 
+			local script_opts = mp.get_property("script-opts") or ""
+			local match_layout = script_opts:match("osc%-layout=([^,]+)")
+			if match_layout then osc_layout = match_layout:lower() end
+
+			-- Check if the layout is one of the standard thick bars
+			local is_standard_layout = (osc_layout == "topbar" or osc_layout == "bottombar")
+			
+			-- Apply logic per your instructions
+			local apply_fixed = is_standard_layout and use_fixed_preview_height
+			local offset = apply_fixed and fixed_preview_y_offset or dynamic_preview_y_offset
+
+			if apply_fixed then
 				if is_topbar then
-					preview_y = fixed_preview_y_offset
+					preview_y = offset
 				else
-					preview_y = osd.h - effective_h - fixed_preview_y_offset
+					preview_y = osd.h - effective_h - offset
 				end
 			else
 				if is_topbar then
-					preview_y = mouse.y + 15 + bw
+					preview_y = mouse.y + offset + bw
 				else
-					preview_y = mouse.y - effective_h - 15 - bw
+					preview_y = mouse.y - effective_h - offset - bw
 				end
 			end
 
-			-- Safety boundaries to prevent the preview from getting cut off
-			if preview_y < bw then preview_y = bw end
-			local chapter_offset = options.show_chapter and (options.chapter_font_size + 8 + bw) or 0
-			if preview_y + effective_h + chapter_offset + bw > osd.h then 
-				preview_y = osd.h - effective_h - chapter_offset - bw 
+			-- Safety boundaries to prevent the preview and chapters from getting cut off at the edges
+			local chapter_offset = options.show_chapter and (options.chapter_font_size + 8) or 0
+			
+			if is_topbar then
+				-- If chapter is ABOVE image, check top boundary
+				if preview_y - chapter_offset - bw < bw then
+					preview_y = chapter_offset + (bw * 2)
+				end
+				-- Check bottom boundary just in case
+				if preview_y + effective_h + bw > osd.h then
+					preview_y = osd.h - effective_h - bw
+				end
+			else
+				-- If chapter is BELOW image, check bottom boundary
+				if preview_y < bw then preview_y = bw end
+				if preview_y + effective_h + chapter_offset + bw > osd.h then 
+					preview_y = osd.h - effective_h - chapter_offset - bw 
+				end
 			end
 		end
 
