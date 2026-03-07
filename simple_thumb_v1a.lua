@@ -373,7 +373,8 @@ if use_script then
 	end
 
 	-- Observe the property as a string (this handles both float numbers and the word "none")
-	mp.observe_property("user-data/osc/hover_mouse_time", "string", on_hover_time_change)
+	mp.observe_property("user-data/osc/hovered-time", "string", on_hover_time_change)
 	
 
 end
+
