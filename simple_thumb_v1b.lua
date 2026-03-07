@@ -446,12 +446,29 @@ if use_script then
 			if preview_x < bw then preview_x = bw end
 			if preview_x + effective_w + bw > osd.w then preview_x = osd.w - effective_w - bw end
 			
+			-- Detect if the mouse is in the top half (topbar) or bottom half (bottombar)
+			local is_topbar = mouse.y < (osd.h / 2)
+
 			if use_fixed_preview_height then
-				preview_y = osd.h - effective_h - fixed_preview_y_offset
+				if is_topbar then
+					preview_y = fixed_preview_y_offset
+				else
+					preview_y = osd.h - effective_h - fixed_preview_y_offset
+				end
 			else
-				preview_y = mouse.y - effective_h - 15 - bw
+				if is_topbar then
+					preview_y = mouse.y + 15 + bw
+				else
+					preview_y = mouse.y - effective_h - 15 - bw
+				end
 			end
+
+			-- Safety boundaries to prevent the preview from getting cut off
 			if preview_y < bw then preview_y = bw end
+			local chapter_offset = options.show_chapter and (options.chapter_font_size + 8 + bw) or 0
+			if preview_y + effective_h + chapter_offset + bw > osd.h then 
+				preview_y = osd.h - effective_h - chapter_offset - bw 
+			end
 		end
 
 		-- Trigger visual updates
