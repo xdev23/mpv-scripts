@@ -23,9 +23,9 @@ e (Long Press): Stop Follower
 
 Ctrl + f: Enable/Disable Follower controls (Leader only)<br/>
 Ctrl + o: Open duplicated MPV window (Leader only)<br/>
-Shift + e: Reset sync offset (Follower only)<br/>
+Ctrl + e: Cycle to the next available Leader (Follower only)
 
-Ctrl + e: Cycle to the next available Leader (Follower only)<br/>
+Shift + e: Reset sync offset (Follower only)<br/>
 Ctrl + r: Decrease sync offset by 0.1s (Follower only)<br/>
 Ctrl + t: Increase sync offset by 0.1s (Follower only)
 
