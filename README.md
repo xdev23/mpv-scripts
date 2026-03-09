@@ -3,9 +3,10 @@ my mpv scripts
 
 btw, to some extent i did use ai in these scripts,  
 
-# simple_thumb_v1a.lua(without chapters support)
+# restartmpv.lua
 
-it can show thumbnail using hidden mpv instance just like thumbfast, but no osc.lua is required, just save this file to scripts folder thats it. enjoy.
+just press f7(default) key in mpv and mpv will restart with same video, useful when making conf or lua changes
+
 
 # simple_thumb_v1b.lua(with chapters support)
 
