@@ -13,6 +13,16 @@ this script is basically a watch together script
 
 open multiple mpv with same or different files and you can sync play them, just create a leader and follower will auto sync, you can have multiple leader and every leader can have multiple followers,
 
+
+open 2 or more mpv instance press `w` to create a leader, other mpv instance will see the leader just press `e` they will follow leader and sync play is started,
+remember if file name is same then both video will play synced, if file name is not same then a offset is registered,
+
+you can change the offset with keys mentioned below but the offset is not erased until leader and all its followers are closed, because there is **session recovery**, as long as one instance either leader or one of follower is active that session is recovered, this is because if other mpv crashes or quits accidently they can rejoin and start enjoying again, where they left
+
+by default follower can't use controls and is muted by default, use `ctrl + f` for this so follower can get control access to unmute itself, if you want follower to change the seek position then just give follower controls access,
+
+there are a lot of control options too, keys are role specific who have the role can use them
+
 keybindings are:
 
 w (Short Press): Start Leader / Show Leader ID<br/>
