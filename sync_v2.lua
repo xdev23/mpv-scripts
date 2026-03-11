@@ -407,6 +407,14 @@ if use_script then
 	function follower_receive_exit()
 		if role == "follower" then mp.command("quit-watch-later") end
 	end
+    
+    -- Function to handle clean disconnect when leader terminates
+	function follower_receive_terminate()
+		if role == "follower" then 
+            stop_follower()
+            mp.osd_message("Leader terminated the session. Disconnected.", 3)
+        end
+	end
 
 	function follower_receive_id(id_str)
 		if role == "follower" and id_str then
@@ -553,6 +561,7 @@ if use_script then
 		
 		mp.register_script_message("sync-update", follower_receive_update)
 		mp.register_script_message("sync-exit", follower_receive_exit)
+        mp.register_script_message("sync-terminate", follower_receive_terminate)
 		mp.register_script_message("assign_id", follower_receive_id)
 		
 		if heartbeat_timer then heartbeat_timer:kill() end
@@ -582,6 +591,7 @@ if use_script then
 		mp.set_property("input-ipc-server", "")
 		mp.unregister_script_message("sync-update")
 		mp.unregister_script_message("sync-exit")
+        mp.unregister_script_message("sync-terminate")
 		mp.unregister_script_message("assign_id")
 		if heartbeat_timer then heartbeat_timer:kill() end
 		if timeout_timer then timeout_timer:kill() end
@@ -739,14 +749,35 @@ if use_script then
 			mp.osd_message("Only Leader can Quit All", 1)
 		end
 	end
+    
+    -- Function to terminate the session entirely
+    function terminate_session()
+        if role == "leader" then
+            -- Tell followers to disconnect cleanly
+            for socket_path, _ in pairs(registered_followers) do
+                local message = { command = { "script-message", "sync-terminate" } }
+                send_raw_json(socket_path, message)
+            end
+            
+            -- Wiping the memory clears out the persistent offset issues
+            known_offsets = {}
+            
+            -- Safely shut down leader 
+            stop_leader()
+            mp.osd_message("Session Terminated & Memory Cleared", 3)
+        else
+            mp.osd_message("Only Leader can terminate the session", 2)
+        end
+    end
 
 	mp.add_key_binding("w", "sync_leader_key", handle_w, {complex=true})
 	mp.add_key_binding("e", "sync_follower_key", handle_e, {complex=true})
 	mp.add_key_binding("Ctrl+f", "sync_toggle_control", toggle_follower_control) 
-	mp.add_key_binding("Ctrl+o", "sync_open_new", open_new_instance) -- [NEW]
+	mp.add_key_binding("Ctrl+o", "sync_open_new", open_new_instance)
 	mp.add_key_binding("Shift+e", "sync_reset", force_reset)
 	mp.add_key_binding("Ctrl+e", "sync_cycle_leader", cycle_leader)
 	mp.add_key_binding("Ctrl+Shift+w", "sync_quit_all", quit_all)
+    mp.add_key_binding("Ctrl+Shift+t", "sync_terminate_session", terminate_session)
 	mp.add_key_binding("Ctrl+r", "sync_offset_down", function() modify_offset(-offset_step) end, {repeatable=true})
 	mp.add_key_binding("Ctrl+t", "sync_offset_up", function() modify_offset(offset_step) end, {repeatable=true})
 
