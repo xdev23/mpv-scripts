@@ -25,22 +25,22 @@ there are a lot of control options too, keys are role specific who have the role
 
 keybindings are:
 
-w (Short Press): Start Leader / Show Leader ID<br/>
-w (Long Press): Stop Leader
 
-e (Short Press): Start Follower / Join active Leader<br/>
-e (Long Press): Stop Follower
+| Keybinding         | Action                                                          | Role          |
+| ------------------ | --------------------------------------------------------------- | ------------- |
+| `w` (Short Press)  | Start Leader / Show Leader ID                                   | Leader        |
+| `w` (Long Press)   | Stop Leader                                                     | Leader        |
+| `e` (Short Press)  | Start Follower / Join active Leader                             | Follower      |
+| `e` (Long Press)   | Stop Follower                                                   | Follower      |
+| `Ctrl + f`         | Enable/Disable Follower controls                                | Leader only   |
+| `Ctrl + o`         | Open duplicated MPV window                                      | Leader only   |
+| `Ctrl + e`         | Cycle to the next available Leader                              | Follower only |
+| `Shift + e`        | Reset sync offset                                               | Follower only |
+| `Ctrl + r`         | Decrease sync offset by 0.1s                                    | Follower only |
+| `Ctrl + t`         | Increase sync offset by 0.1s                                    | Follower only |
+| `Ctrl + Shift + t` | Reset/Terminate session, wiping all offset and session recovery | Leader only   |
+| `Ctrl + Shift + w` | Quit Leader and close all connected Followers                   | Leader only   |
 
-Ctrl + f: Enable/Disable Follower controls (Leader only)<br/>
-Ctrl + o: Open duplicated MPV window (Leader only)<br/>
-Ctrl + e: Cycle to the next available Leader (Follower only)
-
-Shift + e: Reset sync offset (Follower only)<br/>
-Ctrl + r: Decrease sync offset by 0.1s (Follower only)<br/>
-Ctrl + t: Increase sync offset by 0.1s (Follower only)
-
-Ctrl+Shift+t: Reset/Terminate session, wiping all offset and session recovery, good for starting new session (Leader only)<br/>
-Ctrl + Shift + w: Quit Leader and close all connected Followers (Leader only)
 
 # ~~simple_thumb_v1b.lua~~ don't use this
 # ~~simple_thumb_v1b.lua(with chapters support)~~ don't use this too
